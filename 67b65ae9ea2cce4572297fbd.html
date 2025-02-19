@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progress Bar</title>
+    <style>
+      :root {
+        --widget-background: #191919;
+        --progress-bar-height: 5px;
+        --progress-bar-border-radius: 5px;
+        --progress-bar-border-color: #595757;
+        --progress-bar-border-size: 1px;
+        --progress-bar-background: #595757;
+        --progress-bar-color: #ffffff;
+        --progress-bar-text-color: #ffffff;
+      }
+      body {
+        background-color: var(--widget-background);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+          "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji",
+          "Segoe UI Symbol";
+        margin: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        letter-spacing: normal;
+      }
+      .container {
+        min-width: 100%;
+      }
+      .progress-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .progress-bar {
+        background-color: var(--progress-bar-background);
+        border-width: var(--progress-bar-border-size);
+        border-style: solid;
+        border-color: var(--progress-bar-border-color);
+        border-radius: var(--progress-bar-border-radius);
+        height: var(--progress-bar-height);
+        margin: 0 auto;
+        flex-grow: 1;
+        position: relative;
+        overflow-x: hidden;
+      }
+      .progress-bar-fill {
+        background-color: var(--progress-bar-color);
+        height: 100%;
+        position: absolute;
+      }
+      .progress-bar-text {
+        flex-shrink: 0;
+        color: var(--progress-bar-text-color);
+        font-size: 0px;
+        min-width:  0px ;
+      }
+      
+      .nw-poweredby{
+        color: var(--progress-bar-text-color);
+        letter-spacing:normal;
+        z-index: 8; 
+        align-self: center; 
+        min-width: 90px; 
+        order: 2; 
+        min-height: 18px; 
+        height: max-content; 
+        flex-grow: 0; 
+        flex-shrink: 0; 
+        width: calc(100% - 20px); 
+        margin: 10px 10px 0px; 
+        white-space: pre-wrap; 
+        overflow: visible; 
+        word-break: break-word; 
+        line-height: 1.5; 
+        border-radius: 0px; 
+        opacity: 1; 
+        font-family: Helvetica; 
+        font-size: 9px; 
+        font-weight: 400; 
+        text-align: center;
+        cursor:pointer;
+      }
+    </style>
+  </head>
+
+  <body class="dark">
+    <div class="container">
+      <div class="year">
+          <div class="progress-container" id="year-bar">
+            <div class="progress-bar">
+              <div class="progress-bar-fill" style="width: %"></div>
+            </div>
+            <div class="progress-bar-text">
+              Year: %
+            </div>
+          </div>
+      </div>
+      <h1 id="nw-ad" class="nw-poweredby">⚡ Powered by Notion Widgets</h1>
+    </div>
+  </body>
+  <script>
+    document.getElementById("nw-ad").addEventListener("click", openLink);
+    function openLink()
+    {
+      window.open("https://www.widgetly.co/?utm_source=yearly-progress&utm_content=poweredby");
+    }
+
+    function getDay(date) {
+      const startOfDay = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+      );
+      const elapsedTime = date - startOfDay;
+      const totalTime = 24 * 60 * 60 * 1000;
+      const progress = (elapsedTime / totalTime) * 100;
+      return progress;
+    }
+    function getWeek(date) {
+      const startOfWeek = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1)
+      );
+      const elapsedTime = date - startOfWeek;
+      const totalTime = 7 * 24 * 60 * 60 * 1000;
+      const progress = (elapsedTime / totalTime) * 100;
+      return progress;
+    }
+    
+    function getMonth(date) {
+      const startOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+      const elapsedTime = date - startOfMonth;
+      const totalTime =
+        new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate() *
+        24 *
+        60 *
+        60 *
+        1000;
+      const progress = (elapsedTime / totalTime) * 100;
+      return progress;
+    }
+    
+    function getYear(date) {
+      const startOfYear = new Date(date.getFullYear(), 0, 1);
+      const elapsedTime = date - startOfYear;
+      const totalTime = 365 * 24 * 60 * 60 * 1000;
+      const progress = (elapsedTime / totalTime) * 100;
+      return progress;
+    }
+
+    function getLifeProgress() {
+      const dob = "1990-01-01";
+      let lifeExpectancy = "80";
+      if(!dob || !lifeExpectancy) return 0;
+      lifeExpectancy = parseInt(lifeExpectancy);
+      const date = new Date();
+      const elapsedTime = date - new Date(dob);
+      const totalTime = lifeExpectancy * 365 * 24 * 60 * 60 * 1000;
+      const progress = (elapsedTime / totalTime) * 100;
+      return progress && !isNaN(progress) ? progress : 0;
+    }
+  
+    function getProgress() {
+      const date = new Date();
+      const year = getYear(date);
+      const month = getMonth(date);
+      const week = getWeek(date);
+      const day = getDay(date);
+      const decimals = "0";
+      const life = getLifeProgress()
+      
+      if(document.querySelector('#life-bar')) {
+        document.querySelector('#life-bar .progress-bar-fill').style.width = life.toFixed(decimals) + '%';
+        document.querySelector('#life-bar .progress-bar-text').innerText = 'Life: ' + life.toFixed(decimals) + '%';
+      }
+
+      if(document.querySelector('#year-bar')) {
+        document.querySelector('#year-bar .progress-bar-fill').style.width = year.toFixed(decimals) + '%';
+        document.querySelector('#year-bar .progress-bar-text').innerText = 'Year: ' + year.toFixed(decimals) + '%';
+      }
+
+      if(document.querySelector('#month-bar')) {
+        document.querySelector('#month-bar .progress-bar-fill').style.width = month.toFixed(decimals) + '%';
+        document.querySelector('#month-bar .progress-bar-text').innerText = 'Month: ' + month.toFixed(decimals) + '%';
+      }
+
+      if(document.querySelector('#week-bar')) {
+        document.querySelector('#week-bar .progress-bar-fill').style.width = week.toFixed(decimals) + '%';
+        document.querySelector('#week-bar .progress-bar-text').innerText = 'Week: ' + week.toFixed(decimals) + '%';
+      }
+
+      if(document.querySelector('#day-bar')) {
+        document.querySelector('#day-bar .progress-bar-fill').style.width = day.toFixed(decimals) + '%';
+        document.querySelector('#day-bar .progress-bar-text').innerText = 'Day: ' + day.toFixed(decimals) + '%';
+      }
+    }
+    getProgress();
+    const intervalId = setInterval(getProgress, 5 * 60 * 1000);
+    // clear interval on page unload
+    window.addEventListener('beforeunload', () => {
+      clearInterval(intervalId);
+    });
+  </script>
+</html>
+
